@@ -1,0 +1,25 @@
+# ===== ROS2 =====
+build/
+install/
+log/
+
+# ===== Python =====
+__pycache__/
+*.pyc
+*.pyo
+
+# ===== C++ =====
+*.o
+*.so
+*.a
+
+# ===== IDE =====
+.vscode/
+.idea/
+
+# ===== OS =====
+.DS_Store
+
+# ===== CoppeliaSim =====
+*.bak
+*.tmp
