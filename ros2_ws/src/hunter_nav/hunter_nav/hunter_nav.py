@@ -21,6 +21,9 @@ class HunterNav(Node):
         # Intiate target position subscriber
         self.target_x_ = None
         self.target_y_ = None
+        self.x_old = None
+        self.y_old = None
+        self.reversing = False
         self.target_pos_sub_ = self.create_subscription(
             Vector3, 'target1_position_topic', self.target_pos_callback, 10)
         
@@ -115,9 +118,9 @@ class HunterNav(Node):
         d_tar = np.sqrt((target_x - x)**2 + (target_y - y)**2)  # distance to target in meters
         beta_1_d = beta_1 * np.exp(-0/d_tar)
         beta_2 = 40
-        rob_W = 0.90  # Hunter 2 width in meters
+        rob_W = 0.75  # Hunter 2 width in meters
         rob_L = 0.98  # Hunter 2 length in meters
-        Too_FAR = 2.50  # Threshold distance for obstacle influence in meters
+        Too_FAR = 0.90  # Threshold distance for obstacle influence in meters
         N = len(self.sector_dist_obs)
         theta_obs = list(self.sector_angles)  # sector angles in radians
         dist = list(self.sector_dist_obs)     # sector distances in meters
@@ -179,7 +182,7 @@ class HunterNav(Node):
         T2C = 1 * tau_tar  # Time to collision constant [s]
         Dmax = v_max * T2C  # [m]
 
-        if d_tar < 0.25:  # Close to target -> STOP
+        if d_tar < 0.5:  # Close to target -> STOP
             vrobot = 0.0
         elif d_tar < Dmax:  # Velocity bound by target distance
             vrobot = d_tar / T2C
@@ -188,6 +191,23 @@ class HunterNav(Node):
             vrobot = v_max * exp(-beta * max(Vpot, 0))
         else:
             vrobot = v_max
+
+        # Reverse if close to wall
+        if min(dist) < 0.745/2:  # Close to wall -> Stop -> Reverse
+            if self.x_old - x < 1e-4 and self.y_old - y < 1e-4:  # If not moving, reverse
+                self.reversing = True
+                vrobot = -0.5
+                wrobot = -wrobot  # Turn in opposite direction while reversing
+            else:
+                if self.reversing:
+                    vrobot = -0.5
+                    wrobot = -wrobot  # Continue reversing
+                else:
+                    vrobot = 0.0  # Stop if not reversing
+        else:
+            self.reversing = False  # Reset reversing state if not close to wall
+        self.x_old = x  # Update old position 
+        self.y_old = y
 
         # Show velocity
         self.get_logger().info(f'vrobot={vrobot:.4f} m/s')
