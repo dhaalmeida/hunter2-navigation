@@ -31,7 +31,7 @@ class HunterNav(Node):
 
         # Initiate pose subscriber
         self.pose_topic_sub_ = self.create_subscription(
-            PoseStamped, 'pose_topic', self.pose_callback, 10)
+            PoseStamped, 'current_pose', self.pose_callback, 10)
 
     # Callback for target position updates
     def target_pos_callback(self, msg: Vector3):
@@ -51,9 +51,9 @@ class HunterNav(Node):
         velocity_msg = Twist()
 
         # Wait for target position to be received before executing navigation logic
-        if self.target_x_ is None or self.target_y_ is None:
-            self.get_logger().warn('Waiting for target position...')
-            return
+        #if self.target_x_ is None or self.target_y_ is None:
+        #    self.get_logger().warn('Waiting for target position...')
+        #    return
         
         if self.sector_dist_obs is None:
             self.get_logger().warn('Waiting for obstacle distances...')
@@ -82,8 +82,8 @@ class HunterNav(Node):
         phi = np.arctan2(siny_cosp, cosy_cosp)
 
         # Initialize target position
-        target_x = self.target_x_
-        target_y = self.target_y_
+        target_x = 4.839
+        target_y = 2.185
         psi_tar = np.arctan2(target_y - y, target_x - x)
 
         # Set parameters
@@ -175,7 +175,7 @@ class HunterNav(Node):
             Vpot += k[i] * U[i]
 
         # Set linear velocity
-        v_max = 1.50  # [m/s]
+        v_max = 0.30  # [m/s]
         T2C = 1 * tau_tar  # Time to collision constant [s]
         Dmax = v_max * T2C  # [m]
 
@@ -198,7 +198,7 @@ class HunterNav(Node):
         velocity_msg.linear.x = vrobot
         velocity_msg.angular.z = wrobot
         self.cmd_vel_pub_.publish(velocity_msg)
-        #self.get_logger().info('Published cmd_vel.')
+        self.get_logger().info('Published cmd_vel.')
 
 def main(args=None):
     rclpy.init(args=args)

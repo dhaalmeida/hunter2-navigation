@@ -485,7 +485,7 @@ bool obstacle_detection_class::getdynamic_obs(){
     RCLCPP_INFO(this->get_logger(),"Finalizei a conversao....");
     //verificacao:
     for(int i=0;i<n_setores;i++){
-        RCLCPP_INFO(this->get_logger(),"Setor %d: dist= %f theta= %f (em graus %f)",i,dist_obs_setor[i],theta_obs[i],(theta_obs[i]*180.00)/M_PI);
+     //   RCLCPP_INFO(this->get_logger(),"Setor %d: dist= %f theta= %f (em graus %f)",i,dist_obs_setor[i],theta_obs[i],(theta_obs[i]*180.00)/M_PI);
     }
 
     return true;
