@@ -88,7 +88,7 @@ class HunterNav(Node):
 
         # Set parameters
         dt = 0.05  # Time step
-        tau_tar = 40 * dt # Time constant for target acquisition
+        tau_tar = 30 * dt # Time constant for target acquisition
         lambda_tar = 1/tau_tar
         Q = 0.001
 
@@ -110,14 +110,14 @@ class HunterNav(Node):
         # -------------------
 
         # 1. Set parameter values
-        tau_min = 1 * dt
+        tau_min = 10 * dt
         beta_1 = 1 / tau_min
         d_tar = np.sqrt((target_x - x)**2 + (target_y - y)**2)  # distance to target in meters
         beta_1_d = beta_1 * np.exp(-0/d_tar)
-        beta_2 = 40
-        rob_W = 0.90  # Hunter 2 width in meters
+        beta_2 = 150
+        rob_W = 1.50  # Hunter 2 width in meters
         rob_L = 0.98  # Hunter 2 length in meters
-        Too_FAR = 2.50  # Threshold distance for obstacle influence in meters
+        Too_FAR = 5.00  # Threshold distance for obstacle influence in meters
         N = len(self.sector_dist_obs)
         theta_obs = list(self.sector_angles)  # sector angles in radians
         dist = list(self.sector_dist_obs)     # sector distances in meters
